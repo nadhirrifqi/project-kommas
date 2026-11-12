@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator Dosis, Standar pH Kentang &amp; Analisis Agronomis: Cabrio Top 60 WG &amp; Manteb 80 WP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            canvas: '#FAF9F6',
+            surface: '#FFFFFF',
+            botanical: {
+              900: '#143628',
+              800: '#1B4332',
+              700: '#2D6A4F',
+              600: '#40916C',
+              100: '#E6F2EC',
+              50: '#F2F8F5',
+            },
+            amberwarn: {
+              800: '#92400E',
+              700: '#B45309',
+              600: '#D97706',
+              100: '#FEF3C7',
+              50: '#FFFBEB',
+            },
+            earth: {
+              800: '#292524',
+              600: '#57534E',
+              300: '#D6D3D1',
+              200: '#E7E5E4',
+              100: '#F5F5F4',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      height: 300px;
+      max-height: 380px;
+    }
+    @media (min-width: 768px) {
+      .chart-container {
+        height: 330px;
+      }
+    }
+  </style>
+</head>
+<body class="bg-canvas text-earth-800 font-sans antialiased selection:bg-botanical-700 selection:text-white">
+  <!-- Chosen Palette: Warm Botanical & Earth Neutrals -->
+  <!-- Application Structure Plan: Aplikasi disusun dalam 5 bagian tematik yang berorientasi pada keselamatan aplikasi lapangan: (1) Peringatan Taksonomi Kritis bahwa Manteb 80 WP adalah fungisida kontak (bukan insektisida), (2) Tabel Perhitungan Utama & Simulator Volume Tangki (150 L) yang menjawab kebutuhan berat bersih kemasan (250 g & 500 g) dan gramasi pakai (150 g & 300 g), (3) Kalibrasi Standar pH Larutan untuk Tanaman Kentang (pH 5,5–6,5) dengan simulator pH interaktif untuk mencegah hidrolisis basa maupun pelepasan ion logam asam, (4) Analisis Profil Biokimia & Risiko Redundansi FRAC M03 dengan visualisasi beban bahan aktif murni, dan (5) Simulasi Protokol Pencampuran Fluida W-A-L-E-S beserta pedoman ketahanan hujan, jeda panen (PHI), dan penyimpanan sisa. -->
+  <!-- Visualization & Content Choices: 1. Tabel Kalkulasi & Simulator Interaktif -> Goal: Inform & Compare -> Tabel HTML + kontrol volume dinamis (JS) -> Memudahkan verifikasi angka untuk 150 L maupun skala tangki lain. 2. Grafik Batang Bertumpuk Alokasi Kemasan -> Goal: Compare & Optimize -> Chart.js (Canvas) -> Membandingkan berat bersih kemasan yang dibeli (250 g & 500 g) terhadap porsi terpakai dan sisa simpan. 3. Simulator Skala pH Larutan Kentang -> Goal: Safety Calibration -> Spektrum pH HTML/CSS + Slider Interaktif (JS) -> Menampilkan dampak langsung pH air terhadap stabilitas Piraklostrobin/Mankozeb/Metiram dan keamanan daun kentang. 4. Grafik Batang Komposisi Bahan Aktif Murni -> Goal: Analyze Relationships -> Chart.js (Canvas) -> Memvisualisasikan akumulasi 322,5 g bahan aktif Grup FRAC M03 dalam 150 L air. 5. Stepper Pencampuran W-A-L-E-S & Matriks Keselamatan Lapangan -> Goal: Organize Process -> Komponen kartu interaktif berbasis HTML/CSS/Tailwind & JS tanpa SVG atau Mermaid JS. -->
+  <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+  <header class="sticky top-0 z-40 bg-surface/95 backdrop-blur border-b border-earth-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-botanical-800 text-white flex items-center justify-center text-xl font-bold shadow-sm">
+          🧪
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold text-botanical-900 tracking-tight leading-tight">
+            Kalibrasi Dosis &amp; Standar pH Kentang
+          </h1>
+          <p class="text-xs text-earth-600 font-medium">
+            Cabrio Top 60 WG &amp; Manteb 80 WP • Standar Campuran 150 Liter
+          </p>
+        </div>
+      </div>
+      <nav aria-label="Navigasi Bagian" class="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs font-semibold">
+        <a href="#kalkulasi-utama" class="px-3 py-1.5 rounded-lg bg-botanical-50 text-botanical-800 hover:bg-botanical-100 transition">
+          1. Tabel &amp; Kemasan
+        </a>
+        <a href="#standar-ph-kentang" class="px-3 py-1.5 rounded-lg bg-sky-50 text-sky-900 border border-sky-200 hover:bg-sky-100 transition">
+          2. Standar pH Kentang
+        </a>
+        <a href="#analisis-kimia" class="px-3 py-1.5 rounded-lg bg-earth-100 text-earth-800 hover:bg-earth-200 transition">
+          3. Profil Kimia
+        </a>
+        <a href="#protokol-wales" class="px-3 py-1.5 rounded-lg bg-earth-100 text-earth-800 hover:bg-earth-200 transition">
+          4. W-A-L-E-S
+        </a>
+        <a href="#manajemen-lapangan" class="px-3 py-1.5 rounded-lg bg-earth-100 text-earth-800 hover:bg-earth-200 transition">
+          5. PHI &amp; Simpan
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-10">
+    <section aria-label="Klarifikasi Taksonomi Kritis" class="rounded-2xl bg-amberwarn-50 border-2 border-amberwarn-600/40 p-5 sm:p-6 shadow-sm">
+      <div class="flex flex-col md:flex-row md:items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amberwarn-100 text-amberwarn-800 flex items-center justify-center text-2xl shrink-0 font-bold">
+          ⚠️
+        </div>
+        <div class="space-y-2 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amberwarn-700 text-white">
+              Klarifikasi Agronomis Penting
+            </span>
+            <span class="text-xs font-semibold text-amberwarn-800">
+              Identifikasi Kelas Pestisida &amp; Kompatibilitas FRAC M03
+            </span>
+          </div>
+          <h2 class="text-lg sm:text-xl font-bold text-earth-800">
+            Manteb 80 WP adalah Fungisida Kontak, Bukan Insektisida
+          </h2>
+          <p class="text-sm text-earth-800 leading-relaxed">
+            Berdasarkan registrasi agrikimia resmi, <strong>Manteb 80 WP</strong> berbahan aktif tunggal <em>Mankozeb 80%</em> yang bekerja secara spesifik membasmi cendawan/jamur patogen seperti busuk daun kentang (<em>Phytophthora infestans</em>) dan <strong>tidak memiliki efek racun terhadap serangga, ulat, maupun kutu</strong>. Menggabungkan <strong>Cabrio Top 60 WG</strong> (Piraklostrobin 5% + Metiram 55%) dengan <strong>Manteb 80 WP</strong> merupakan pencampuran dua fungisida dari golongan kimia yang bertumpang tindih (<strong>FRAC Grup M03 Ditiokarbamat</strong>). Oleh karena itu, dosis campuran wajib ditahan pada <strong>batas aman terendah</strong> (1 g/L dan 2 g/L) serta pH air harus dikalibrasi agar tidak merusak daun kentang.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="kalkulasi-utama" class="space-y-6 scroll-mt-20">
+      <div class="space-y-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-botanical-700">
+          Bagian 01 • Jawaban Kuantitatif &amp; Efisiensi Logistik
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-botanical-900">
+          Tabel Perhitungan Dosis, Kebutuhan Air &amp; Rekomendasi Pembelian Kemasan
+        </h2>
+        <p class="text-sm sm:text-base text-earth-600 leading-relaxed max-w-4xl">
+          Bagian ini menyajikan jawaban presisi untuk meracik campuran pestisida pada kapasitas target <strong>150 Liter air</strong> (setara 1 drum semprot standar atau sekitar 10 tangki punggung kapasitas 15 liter). Anda juga dapat menggunakan panel simulasi di bawah ini untuk menguji kebutuhan gramasi dan ukuran kemasan bersih apabila volume air disesuaikan.
+        </p>
+      </div>
+
+      <div class="bg-surface rounded-2xl border border-earth-200 p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-5 border-b border-earth-200">
+          <div>
+            <label for="waterVolumeInput" class="block text-xs font-bold uppercase tracking-wider text-botanical-800 mb-1">
+              Kalibrasi Volume Total Air Pelarut (Liter)
+            </label>
+            <p class="text-xs text-earth-600">
+              Standar acuan laporan adalah <strong>150 Liter</strong>. Pilih preset atau geser pengatur volume untuk simulasi.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" data-vol="16" class="vol-preset px-3 py-1.5 rounded-lg text-xs font-bold border border-earth-300 bg-canvas hover:bg-botanical-50 text-earth-800 transition">
+              16 L (1 Tangki)
+            </button>
+            <button type="button" data-vol="75" class="vol-preset px-3 py-1.5 rounded-lg text-xs font-bold border border-earth-300 bg-canvas hover:bg-botanical-50 text-earth-800 transition">
+              75 L (½ Drum)
+            </button>
+            <button type="button" data-vol="150" class="vol-preset px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-botanical-700 bg-botanical-800 text-white shadow-sm transition">
+              150 L (Target Utama)
+            </button>
+            <button type="button" data-vol="300" class="vol-preset px-3 py-1.5 rounded-lg text-xs font-bold border border-earth-300 bg-canvas hover:bg-botanical-50 text-earth-800 transition">
+              300 L (2 Drum)
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-4 flex flex-col sm:flex-row items-center gap-4">
+          <input id="waterVolumeSlider" type="range" min="15" max="500" step="5" value="150" aria-label="Slider Volume Air" class="w-full accent-botanical-700 cursor-pointer" />
+          <div class="flex items-center gap-2 shrink-0 bg-botanical-50 border border-botanical-600/30 px-3.5 py-2 rounded-xl">
+            <input id="waterVolumeInput" type="number" min="1" max="2000" value="150" aria-label="Input Angka Volume Air" class="w-20 font-mono text-lg font-bold text-botanical-900 bg-transparent text-right focus:outline-none" />
+            <span class="text-sm font-bold text-botanical-800">Liter Air</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-surface rounded-2xl border border-earth-200 p-5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-botanical-700">Cabrio Top 60 WG</span>
+            <span class="text-lg">📦</span>
+          </div>
+          <div class="my-3">
+            <div id="kpiCabrioPack" class="text-2xl font-extrabold text-botanical-900 font-mono">Beli 250 gr</div>
+            <p id="kpiCabrioSub" class="text-xs text-earth-600 mt-1">1 kemasan bersih • Sisa simpan 100 gr</p>
+          </div>
+          <div class="pt-2 border-t border-earth-100 flex items-center justify-between text-xs">
+            <span class="text-earth-600">Takaran Pakai:</span>
+            <span id="kpiCabrioUse" class="font-mono font-bold text-botanical-800">150 gram</span>
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-2xl border border-earth-200 p-5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-amberwarn-800">Manteb 80 WP</span>
+            <span class="text-lg">📦</span>
+          </div>
+          <div class="my-3">
+            <div id="kpiMantebPack" class="text-2xl font-extrabold text-earth-800 font-mono">Beli 500 gr</div>
+            <p id="kpiMantebSub" class="text-xs text-earth-600 mt-1">1 kemasan bersih • Sisa simpan 200 gr</p>
+          </div>
+          <div class="pt-2 border-t border-earth-100 flex items-center justify-between text-xs">
+            <span class="text-earth-600">Takaran Pakai:</span>
+            <span id="kpiMantebUse" class="font-mono font-bold text-amberwarn-800">300 gram</span>
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-2xl border border-earth-200 p-5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-800">Penggabungan Air</span>
+            <span class="text-lg">💧</span>
+          </div>
+          <div class="my-3">
+            <div id="kpiWaterTotal" class="text-2xl font-extrabold text-sky-900 font-mono">150 Liter</div>
+            <p id="kpiWaterTanks" class="text-xs text-earth-600 mt-1">Setara ± 10 tangki semprot (15 L)</p>
+          </div>
+          <div class="pt-2 border-t border-earth-100 flex items-center justify-between text-xs">
+            <span class="text-earth-600">Total Padatan Larut:</span>
+            <span id="kpiTotalSolids" class="font-mono font-bold text-sky-900">450 gram</span>
+          </div>
+        </div>
+
+        <div class="bg-botanical-900 text-white rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-botanical-100">Standar pH Kentang</span>
+            <span class="text-lg">🌡️</span>
+          </div>
+          <div class="my-3">
+            <div class="text-xl font-extrabold font-mono leading-snug">pH 5,5 – 6,5</div>
+            <p class="text-xs text-botanical-100/90 mt-1">Wajib diukur dari air baku lahan sebelum obat dituang (maks. pH 7,0).</p>
+          </div>
+          <div class="pt-2 border-t border-botanical-700 flex items-center justify-between text-xs">
+            <span class="text-botanical-100">Rasio Dosis:</span>
+            <span class="font-mono font-bold">1 g/L : 2 g/L</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-surface rounded-2xl border border-earth-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 bg-earth-100/70 border-b border-earth-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <h3 class="text-base font-bold text-earth-800">
+            Tabel Rincian Kalibrasi Obat &amp; Pembelian Berat Bersih
+          </h3>
+          <span class="text-xs font-semibold text-earth-600">
+            Seluruh parameter diperbarui otomatis mengikuti volume air di atas
+          </span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-botanical-50 border-b border-earth-200 text-xs font-bold uppercase tracking-wider text-botanical-900">
+                <th class="py-3.5 px-4 sm:px-5">Parameter Perhitungan</th>
+                <th class="py-3.5 px-4 sm:px-5">Produk 1: Cabrio Top 60 WG</th>
+                <th class="py-3.5 px-4 sm:px-5">Produk 2: Manteb 80 WP</th>
+                <th class="py-3.5 px-4 sm:px-5">Keterangan &amp; Dasar Agronomis</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-earth-200 text-sm">
+              <tr class="hover:bg-canvas transition">
+                <td class="py-3.5 px-4 sm:px-5 font-semibold text-earth-800">Klasifikasi Pestisida</td>
+                <td class="py-3.5 px-4 sm:px-5">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-botanical-100 text-botanical-900">
+                    Fungisida Sistemik &amp; Kontak
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 sm:px-5">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-amberwarn-100 text-amberwarn-800">
+                    Fungisida Kontak (Bukan Insektisida)
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 sm:px-5 text-xs text-earth-600">
+                  Keduanya sasaran penyakit jamur; tidak mengendalikan hama serangga.
+                </td>
+              </tr>
+              <tr class="hover:bg-canvas transition">
+                <td class="py-3.5 px-4 sm:px-5 font-semibold text-earth-800">Bahan Aktif &amp; Formulasi</td>
+                <td class="py-3.5 px-4 sm:px-5 font-medium">Piraklostrobin 5% + Metiram 55% (WG)</td>
+                <td class="py-3.5 px-4 sm:px-5 font-medium">Mankozeb 80% (WP)</td>
+                <td class="py-3.5 px-4 sm:px-5 text-xs text-earth-600">
+                  WG (butiran dispersi) + WP (tepung suspensi); sama-sama memuat Grup FRAC M03.
+                </td>
+              </tr>
+              <tr class="hover:bg-canvas transition">
+                <td class="py-3.5 px-4 sm:px-5 font-semibold text-earth-800">Dosis Acuan per Liter</td>
+                <td class="py-3.5 px-4 sm:px-5 font-mono font-bold text-botanical-800">1 gram / Liter</td>
+                <td class="py-3.5 px-4 sm:px-5 font-mono font-bold text-amberwarn-800">2 gram / Liter</td>
+                <td class="py-3.5 px-4 sm:px-5 text-xs text-earth-600">
+                  Batas dosis aman terendah untuk mencegah keracunan daun (fitotoksisitas).
+                </td>
+              </tr>
+              <tr class="bg-botanical-50/40 hover:bg-botanical-50 transition">
+                <td class="py-3.5 px-4 sm:px-5 font-bold text-earth-800">Harus Menggunakan (Gram)</td>
+                <td id="tblCabrioUse" class="py-3.5 px-4 sm:px-5 font-mono text-base font-extrabold text-botanical-800">150 gram</td>
+                <td id="tblMantebUse" class="py-3.5 px-4 sm:px-5 font-mono text-base font-extrabold text-amberwarn-800">300 gram</td>
+                <td class="py-3.5 px-4 sm:px-5 text-xs text-earth-600">
+                  Total padatan obat yang dilarutkan bersama dalam satu wadah pencampuran.
+                </td>
+              </tr>
+              <tr class="hover:bg-canvas transition">
+                <td class="py-3.5 px-4 sm:px-5 font-bold text-earth-800">Penggabungan dengan Air</td>
+                <td id="tblCabrioWater" class="py-3.5 px-4 sm:px-5 font-mono font-bold text-sky-900">150 Liter</td>
+                <td id="tblMantebWater" class="py-3.5 px-4 sm:px-5 font-mono font-bold text-sky-900">150 Liter</td>
+                <td class="py-3.5 px-4 sm:px-5 text-xs text-earth-600">
+                  Dicampur dalam <strong>satu volume air yang sama</strong> (bukan 150 L + 150 L terpisah).
+                </td>
+              </tr>
+              <tr class="bg-amberwarn-50/40 hover:bg-amberwarn-50 transition">
+                <td class="py-3.5 px-4 sm:px-5 font-bold text-earth-800">Harus Beli Berat Bersih</td>
+                <td id="tblCabrioBuy" class="py-3.5 px-4 sm:px-5">
+                  <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-mono font-extrabold bg-botanical-800 text-white">
+                    Kemasan 250 gram
+                  </span>
+                </td>
+                <td id="tblMantebBuy" class="py-3.5 px-4 sm:px-5">
+                  <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-mono font-extrabold bg-amberwarn-700 text-white">
+                    Kemasan 500 gram
+                  </span>
+                </td>
+                <td id="tblBuyNote" class="py-3.5 px-4 sm:px-5 text-xs text-earth-600">
+                  Cabrio tersedia 250g &amp; 500g (pilih 250g). Manteb tersedia 250g, 500g, 800g, 1kg (pilih 500g).
+                </td>
+              </tr>
+              <tr class="hover:bg-canvas transition">
+                <td class="py-3.5 px-4 sm:px-5 font-semibold text-earth-800">Sisa Stok Simpan (Surplus)</td>
+                <td id="tblCabrioRem" class="py-3.5 px-4 sm:px-5 font-mono font-semibold text-earth-700">100 gram</td>
+                <td id="tblMantebRem" class="py-3.5 px-4 sm:px-5 font-mono font-semibold text-earth-700">200 gram</td>
+                <td class="py-3.5 px-4 sm:px-5 text-xs text-earth-600">
+                  Wajib ditutup rapat kedap udara karena sifat bubuk menyerap kelembapan (higroskopis).
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-surface rounded-2xl border border-earth-200 p-5 sm:p-6 shadow-sm">
+        <div class="lg:col-span-5 space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-botanical-700">
+            Visualisasi Efisiensi Pembelian
+          </span>
+          <h3 class="text-lg sm:text-xl font-bold text-earth-800">
+            Perbandingan Berat Kemasan Dibeli vs. Terpakai
+          </h3>
+          <p class="text-sm text-earth-600 leading-relaxed">
+            Grafik di samping memvisualisasikan mengapa pemilihan kemasan <strong>250 gram</strong> untuk Cabrio Top dan <strong>500 gram</strong> untuk Manteb 80 WP merupakan keputusan paling rasional. Membeli kemasan 1 kg (1.000 gram) Manteb akan menyisakan 700 gram bahan yang rentan menggumpal akibat kelembapan udara.
+          </p>
+          <div class="p-3.5 rounded-xl bg-canvas border border-earth-200 text-xs space-y-1.5 text-earth-700">
+            <div class="flex justify-between">
+              <span>Estimasi Harga Pasar Cabrio Top 250 gr:</span>
+              <span class="font-mono font-bold text-earth-800">Rp 92.000 – Rp 115.000</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Estimasi Harga Pasar Manteb 80 WP 1 kg:</span>
+              <span class="font-mono font-bold text-earth-800">Rp 103.000 – Rp 121.000</span>
+            </div>
+          </div>
+        </div>
+        <div class="lg:col-span-7 flex flex-col">
+          <div class="chart-container">
+            <canvas id="packagingChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="standar-ph-kentang" class="space-y-6 scroll-mt-20">
+      <div class="space-y-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-800">
+          Bagian 02 • Kalibrasi Kualitas Air &amp; Keamanan Tanaman Kentang
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-botanical-900">
+          Apakah pH Larutan Sudah Diukur &amp; Bagaimana Standar Aman untuk Kentang?
+        </h2>
+        <p class="text-sm sm:text-base text-earth-600 leading-relaxed max-w-4xl">
+          <strong>Penting diketahui:</strong> Angka dosis 150 g dan 300 g dalam 150 L air di atas adalah takaran massa murni; <strong>nilai pH akhir larutan belum bisa dipastikan tanpa pengukuran langsung di lahan</strong> karena sangat bergantung pada sumber air baku Anda (air sumur, sungai, mata air pegunungan, atau air hujan). Kedua obat ini hanya memberikan sedikit pergeseran pH (umumnya mendekati netral pH 6,5–7,2 pada air suling).
+        </p>
+      </div>
+
+      <div class="bg-surface rounded-2xl border-2 border-sky-600/30 p-5 sm:p-6 shadow-sm space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-earth-200 pb-4">
+          <div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-900">
+              Simulator Diagnostik pH Larutan Semprot Kentang
+            </span>
+            <h3 class="text-lg sm:text-xl font-bold text-earth-800 mt-1.5">
+              Uji Dampak pH Air Terhadap Cabrio Top + Manteb 80 WP &amp; Daun Kentang
+            </h3>
+          </div>
+          <div class="flex items-center gap-3 bg-canvas border border-earth-300 px-4 py-2.5 rounded-xl shrink-0">
+            <span class="text-xs font-bold text-earth-600 uppercase">Hasil Ukur pH:</span>
+            <span id="phValueDisplay" class="font-mono text-2xl font-extrabold text-botanical-800">6.2</span>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex justify-between text-[11px] font-mono font-bold text-earth-600 px-1">
+            <span>pH 4.0 (Terlalu Asam)</span>
+            <span class="text-botanical-800">pH 5.5 – 6.5 (STANDAR IDEAL KENTANG)</span>
+            <span>pH 9.0 (Terlalu Basa)</span>
+          </div>
+          <div class="h-4 w-full rounded-full overflow-hidden flex shadow-inner border border-earth-300">
+            <div class="w-[20%] bg-rose-600" title="pH 4.0 - 5.0: Bahaya Fitotoksisitas Logam"></div>
+            <div class="w-[10%] bg-amber-400" title="pH 5.0 - 5.5: Agak Asam"></div>
+            <div class="w-[20%] bg-emerald-600" title="pH 5.5 - 6.5: Zona Optimal Kentang & Ditiokarbamat"></div>
+            <div class="w-[10%] bg-lime-500" title="pH 6.5 - 7.0: Batas Toleransi Atas"></div>
+            <div class="w-[40%] bg-indigo-700" title="pH > 7.0 - 9.0: Hidrolisis Basa & Rusak Kutikula"></div>
+          </div>
+          <input id="phSlider" type="range" min="4.0" max="9.0" step="0.1" value="6.2" aria-label="Slider pH Air Semprot" class="w-full accent-botanical-800 cursor-pointer" />
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button type="button" data-ph="4.6" class="ph-preset px-3 py-1 rounded-lg text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 transition">
+              Air Hujan / Gambut (pH 4,6)
+            </button>
+            <button type="button" data-ph="6.2" class="ph-preset px-3 py-1 rounded-lg text-xs font-bold bg-botanical-800 text-white border border-botanical-800 transition">
+              Standar Ideal Kentang (pH 6,2)
+            </button>
+            <button type="button" data-ph="6.8" class="ph-preset px-3 py-1 rounded-lg text-xs font-bold bg-lime-50 text-lime-900 border border-lime-300 hover:bg-lime-100 transition">
+              Batas Toleransi Atas (pH 6,8)
+            </button>
+            <button type="button" data-ph="8.1" class="ph-preset px-3 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-900 border border-indigo-200 hover:bg-indigo-100 transition">
+              Air Sumur Kapur / Sadah (pH 8,1)
+            </button>
+          </div>
+        </div>
+
+        <div id="phStatusBox" class="p-4 sm:p-5 rounded-xl bg-botanical-50 border border-botanical-600/40 space-y-2 transition-all">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span id="phStatusBadge" class="px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wider bg-botanical-800 text-white">
+              ZONA AMAN &amp; OPTIMAL UNTUK KENTANG
+            </span>
+            <span id="phActionTag" class="text-xs font-mono font-bold text-botanical-900">
+              Tindakan: Langsung Gunakan Tanpa Penyangga pH
+            </span>
+          </div>
+          <h4 id="phStatusTitle" class="text-base font-bold text-botanical-900 pt-1">
+            Stabilitas Molekul Maksimal &amp; Aman Bagi Kutikula Daun Kentang
+          </h4>
+          <p id="phStatusDesc" class="text-sm text-earth-800 leading-relaxed">
+            Pada rentang pH 5,5 hingga 6,5, piraklostrobin terserap optimal menembus kutikula daun kentang (<em>Solanum tuberosum</em>), sementara mankozeb dan metiram tetap stabil melapisi permukaan daun tanpa terurai menjadi senyawa beracun. Risiko daun terbakar (fitotoksisitas) berada pada titik terendah.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div class="p-4 rounded-xl bg-canvas border border-earth-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase text-botanical-800">1. Batas Standar Kentang</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Tanaman kentang memiliki daun berbulu halus dan kutikula sensitif. Standar pH larutan semprot daun kentang adalah <strong>pH 5,5 – 6,5</strong> (dengan batas maksimal toleransi <strong>pH 7,0</strong>). Jangan menyemprot di atas pH 7,5.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-canvas border border-earth-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase text-rose-800">2. Bahaya Terlalu Asam (&lt; pH 5,0)</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Pada pH di bawah 5,0, mankozeb &amp; metiram terurai cepat dan melepaskan ion logam bebas <strong>Mangan (Mn²⁺) &amp; Seng (Zn²⁺)</strong> secara berlebihan sehingga memicu bercak gosong/keracunan akut pada daun kentang.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-canvas border border-earth-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase text-indigo-900">3. Bahaya Terlalu Basa (&gt; pH 7,5)</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Air basa memicu <strong>hidrolisis basa</strong> yang merusak daya bunuh fungisida dan menghasilkan metabolit ETU. Jika air baku Anda &gt; pH 7,2, turunkan dulu memakai <em>pH Adjuster / Buffer</em> sebelum obat dimasukkan.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="analisis-kimia" class="space-y-6 scroll-mt-20">
+      <div class="space-y-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-botanical-700">
+          Bagian 03 • Telaah Biokimia &amp; Patologi Tanaman
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-botanical-900">
+          Karakterisasi Bahan Aktif, Redundansi FRAC M03 &amp; Risiko Fitotoksisitas
+        </h2>
+        <p class="text-sm sm:text-base text-earth-600 leading-relaxed max-w-4xl">
+          Memahami cara kerja di tingkat seluler sangat penting sebelum menggabungkan dua formulasi dalam satu drum. Bagian ini membedah profil mekanisme kerja masing-masing produk, menampilkan grafik beban molekul bahan aktif murni di dalam 150 liter air, serta menyediakan inspektor gejala keracunan tanaman dan alternatif rotasi yang lebih sehat secara agronomis.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <article class="bg-surface rounded-2xl border border-earth-200 p-6 shadow-sm space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-botanical-100 text-botanical-900">
+                BASF • Formulasi WG (Water Dispersible Granules)
+              </span>
+              <h3 class="text-xl font-extrabold text-botanical-900 mt-2">Cabrio Top 60 WG</h3>
+            </div>
+            <span class="text-2xl">🌱</span>
+          </div>
+          <ul class="space-y-2.5 text-sm text-earth-700 leading-relaxed">
+            <li class="flex items-start gap-2.5">
+              <span class="font-bold text-botanical-700 mt-0.5">•</span>
+              <span><strong>Piraklostrobin 5% (FRAC Grup 11 - Strobilurin):</strong> Bekerja sistemik translaminar menembus kutikula daun, menghambat respirasi mitokondria jamur (QoI), sekaligus memicu efek fisiologis <em>AgCelence (stay-green)</em> yang menekan hormon etilen penuaan daun.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-bold text-botanical-700 mt-0.5">•</span>
+              <span><strong>Metiram 55% (FRAC Grup M03 - Ditiokarbamat):</strong> Agen kontak multi-situs yang membentuk lapisan film pelindung pada permukaan daun untuk mencegah perkecambahan spora dan menekan risiko resistensi.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-bold text-botanical-700 mt-0.5">•</span>
+              <span><strong>Keunggulan Fisik WG:</strong> Butiran mikro bebas debu yang pecah spontan dan terdispersi stabil di dalam air tanpa mudah mengendap.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="bg-surface rounded-2xl border border-earth-200 p-6 shadow-sm space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amberwarn-100 text-amberwarn-800">
+                Saprotan Utama • Formulasi WP (Wettable Powder)
+              </span>
+              <h3 class="text-xl font-extrabold text-earth-800 mt-2">Manteb 80 WP</h3>
+            </div>
+            <span class="text-2xl">🛡️</span>
+          </div>
+          <ul class="space-y-2.5 text-sm text-earth-700 leading-relaxed">
+            <li class="flex items-start gap-2.5">
+              <span class="font-bold text-amberwarn-700 mt-0.5">•</span>
+              <span><strong>Mankozeb 80% (FRAC Grup M03 - Ditiokarbamat):</strong> Fungisida kontak protektif murni yang bekerja di luar jaringan daun dengan menginaktivasi gugus enzim sulfhidril (SH) jamur seperti <em>Phytophthora infestans</em> (busuk daun kentang) dan <em>Alternaria solani</em> (bercak kering).</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-bold text-amberwarn-700 mt-0.5">•</span>
+              <span><strong>Suplai Unsur Hara Mikro:</strong> Kompleks koordinasi ion Mangan (Mn) dan Seng (Zn) dalam Mankozeb memberikan nutrisi mikro sekunder bagi pemulihan warna hijau daun.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-bold text-amberwarn-700 mt-0.5">•</span>
+              <span><strong>Karakteristik Suspensi WP:</strong> Serbuk tepung tidak larut secara molekuler melainkan melayang tersuspensi; membutuhkan pengadukan (agitasi) terus-menerus agar tidak mengendap di dasar tangki.</span>
+            </li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-surface rounded-2xl border border-earth-200 p-5 sm:p-6 shadow-sm">
+        <div class="lg:col-span-7 flex flex-col order-2 lg:order-1">
+          <div class="chart-container">
+            <canvas id="activeIngredientChart"></canvas>
+          </div>
+        </div>
+        <div class="lg:col-span-5 space-y-3 order-1 lg:order-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-amberwarn-800">
+            Analisis Beban Molekul dalam 150 Liter
+          </span>
+          <h3 class="text-lg sm:text-xl font-bold text-earth-800">
+            Akumulasi Bahan Aktif Grup M03 Mencapai 322,5 Gram
+          </h3>
+          <p class="text-sm text-earth-600 leading-relaxed">
+            Dalam 150 liter air (150 g Cabrio + 300 g Manteb), terdapat <strong>82,5 g Metiram</strong> dan <strong>240 g Mankozeb</strong> yang keduanya berada di golongan FRAC M03 yang sama, sementara <strong>Piraklostrobin</strong> hanya <strong>7,5 g</strong>.
+          </p>
+          <p class="text-sm text-earth-600 leading-relaxed">
+            Karena kerja Metiram dan Mankozeb saling tumpang tindih pada target seluler yang sama, menaikkan dosis di atas 1 g/L dan 2 g/L atau menyemprot pada pH ekstrem tidak memperluas daya bunuh penyakit, melainkan memicu keracunan daun kentang.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-surface rounded-2xl border border-earth-200 p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-earth-200 pb-4">
+          <div>
+            <h3 class="text-lg font-bold text-earth-800">
+              Inspektor Risiko Lapangan &amp; Rekomendasi Agronomis Kentang
+            </h3>
+            <p class="text-xs text-earth-600">
+              Klik tab di bawah untuk mengevaluasi gejala fitotoksisitas akibat kelebihan dosis/pH atau strategi rotasi yang lebih disarankan.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" data-tab="fitotoksisitas" class="risk-tab px-3.5 py-2 rounded-xl text-xs font-bold bg-amberwarn-700 text-white shadow-sm transition">
+              Gejala Fitotoksisitas
+            </button>
+            <button type="button" data-tab="rotasi" class="risk-tab px-3.5 py-2 rounded-xl text-xs font-bold bg-earth-100 text-earth-800 hover:bg-earth-200 transition">
+              Alternatif Rotasi Sehat
+            </button>
+            <button type="button" data-tab="insektisida" class="risk-tab px-3.5 py-2 rounded-xl text-xs font-bold bg-earth-100 text-earth-800 hover:bg-earth-200 transition">
+              Jika Targetnya Hama Serangga
+            </button>
+          </div>
+        </div>
+
+        <div id="tab-fitotoksisitas" class="risk-panel grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          <div class="p-4 rounded-xl bg-amberwarn-50 border border-amberwarn-600/30 space-y-1.5">
+            <div class="text-sm font-bold text-amberwarn-800">1. Klorosis Tepi Daun</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Klorofil rusak akibat penumpukan garam logam (Mn/Zn) dan ditiokarbamat, menyebabkan pucuk atau tepi daun kentang menguning serentak.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-amberwarn-50 border border-amberwarn-600/30 space-y-1.5">
+            <div class="text-sm font-bold text-amberwarn-800">2. Nekrosis &amp; Bercak Gosong</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Pinggiran helai daun mengering seperti terbakar, mengerut/menggulung, serta terhambatnya respirasi stomata akibat lapisan tepung terlalu tebal atau pH ekstrem.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-amberwarn-50 border border-amberwarn-600/30 space-y-1.5">
+            <div class="text-sm font-bold text-amberwarn-800">3. Stres Vegetatif &amp; Umbi</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Stres kimiawi berlebih menghambat fotosintesis daun kentang sehingga pengisian umbi di dalam tanah menjadi tidak maksimal.
+            </p>
+          </div>
+        </div>
+
+        <div id="tab-rotasi" class="risk-panel hidden grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <div class="p-4 rounded-xl bg-botanical-50 border border-botanical-600/30 space-y-1.5">
+            <div class="text-sm font-bold text-botanical-900">Aplikasi Tunggal Bergantian (Rotasi)</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Sains proteksi tanaman menyarankan penggunaan <strong>Cabrio Top 60 WG</strong> secara tunggal (1–2 g/L) pada fase pembentukan umbi untuk memaksimalkan efek <em>stay-green</em>, lalu dirotasi pada minggu berikutnya dengan <strong>Manteb 80 WP</strong> (2–3 g/L) saat curah hujan tinggi.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-botanical-50 border border-botanical-600/30 space-y-1.5">
+            <div class="text-sm font-bold text-botanical-900">Keuntungan Ekonomi &amp; Teknis</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Rotasi mencegah pemborosan biaya akibat fungsi ganda Metiram + Mankozeb, menghilangkan risiko penggumpalan suspensi di tangki, dan memastikan daun kentang tetap bernapas optimal.
+            </p>
+          </div>
+        </div>
+
+        <div id="tab-insektisida" class="risk-panel hidden grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <div class="p-4 rounded-xl bg-sky-50 border border-sky-600/30 space-y-1.5">
+            <div class="text-sm font-bold text-sky-900">Evaluasi Ulang Target Hama Kentang</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Apabila tujuan penyemprotan di lahan kentang adalah membasmi ulat grayak, pengorok daun (<em>Liriomyza</em>), kutu daun, atau trips, maka <strong>Manteb 80 WP harus diganti</strong> dengan insektisida berbahan aktif sesuai (misalnya Abamektin, Emamektin Benzoat, atau Spinetoram).
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-sky-50 border border-sky-600/30 space-y-1.5">
+            <div class="text-sm font-bold text-sky-900">Kompatibilitas Cabrio Top + Insektisida</div>
+            <p class="text-xs text-earth-700 leading-relaxed">
+              Cabrio Top 60 WG (WG) jauh lebih aman dan kompatibel bila dicampur dengan insektisida cair (EC/SL/SC) mengikuti urutan W-A-L-E-S dibandingkan mencampur dua fungisida tepung sekaligus.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="protokol-wales" class="space-y-6 scroll-mt-20">
+      <div class="space-y-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-botanical-700">
+          Bagian 04 • Rekayasa Fluida &amp; Teknik Pelarutan
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-botanical-900">
+          Protokol Pencampuran Tangki Metode W-A-L-E-S (Double Pre-Mix)
+        </h2>
+        <p class="text-sm sm:text-base text-earth-600 leading-relaxed max-w-4xl">
+          Melarutkan total <strong>450 gram</strong> bahan padat (150 g WG + 300 g WP) ke dalam 150 liter air tidak boleh dituang langsung secara bersamaan ke drum utama karena berisiko memicu flokulasi (penggumpalan seperti pasta) dan menyumbat saringan nozzle. Ikuti 4 tahapan interaktif metode <strong>W-A-L-E-S</strong> di bawah ini (pastikan cek pH air pada Langkah 01).
+        </p>
+      </div>
+
+      <div class="bg-surface rounded-2xl border border-earth-200 p-5 sm:p-6 shadow-sm space-y-6">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <button type="button" data-step="1" class="wales-step-btn text-left p-3.5 rounded-xl border-2 border-botanical-700 bg-botanical-800 text-white transition">
+            <div class="text-[11px] font-mono uppercase opacity-80">Langkah 01</div>
+            <div class="text-sm font-bold mt-0.5">Air &amp; Cek pH (50%)</div>
+          </button>
+          <button type="button" data-step="2" class="wales-step-btn text-left p-3.5 rounded-xl border border-earth-200 bg-canvas hover:bg-botanical-50 text-earth-800 transition">
+            <div class="text-[11px] font-mono uppercase text-earth-600">Langkah 02 • W1</div>
+            <div class="text-sm font-bold mt-0.5">Pre-Mix Cabrio WG</div>
+          </button>
+          <button type="button" data-step="3" class="wales-step-btn text-left p-3.5 rounded-xl border border-earth-200 bg-canvas hover:bg-botanical-50 text-earth-800 transition">
+            <div class="text-[11px] font-mono uppercase text-earth-600">Langkah 03 • W2</div>
+            <div class="text-sm font-bold mt-0.5">Pre-Mix Manteb WP</div>
+          </button>
+          <button type="button" data-step="4" class="wales-step-btn text-left p-3.5 rounded-xl border border-earth-200 bg-canvas hover:bg-botanical-50 text-earth-800 transition">
+            <div class="text-[11px] font-mono uppercase text-earth-600">Langkah 04 • A &amp; S</div>
+            <div class="text-sm font-bold mt-0.5">Integrasi 150 Liter</div>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-canvas rounded-2xl border border-earth-200 p-5">
+          <div class="lg:col-span-7 space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-botanical-100 text-botanical-900 text-xs font-bold">
+              <span id="walesBadge">Tahap 1 dari 4 • Persiapan &amp; Kalibrasi pH Air</span>
+            </div>
+            <h3 id="walesTitle" class="text-xl font-extrabold text-earth-800">
+              Isi Drum dengan 75 Liter Air Bersih &amp; Ukur pH (Target 5,5 – 6,5)
+            </h3>
+            <p id="walesDesc" class="text-sm text-earth-700 leading-relaxed">
+              Tempatkan drum kapasitas minimal 150–200 liter pada permukaan tanah yang rata. Isi dengan 75 liter air jernih bebas lumpur, lalu ukur dengan pH meter atau kertas lakmus. Jika pH air baku melebihi 7,2, tambahkan larutan penyangga (pH adjuster) terlebih dahulu agar masuk rentang aman kentang (5,5–6,5). Siapkan juga 2 ember terpisah masing-masing berisi 5 liter air bersih.
+            </p>
+            <div class="p-3.5 rounded-xl bg-surface border border-earth-200 text-xs text-earth-700 font-medium">
+              <strong class="text-botanical-800">Catatan Teknis:</strong> <span id="walesTip">Selalu koreksi pH air baku SEBELUM memasukkan bubuk Cabrio Top atau Manteb 80 WP.</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 flex flex-col items-center justify-center p-4 bg-surface rounded-xl border border-earth-200">
+            <div class="text-xs font-bold uppercase tracking-wider text-earth-600 mb-3">
+              Indikator Kapasitas Drum Campuran
+            </div>
+            <div class="w-44 h-48 rounded-b-2xl rounded-t-md border-4 border-earth-800 bg-earth-100 relative overflow-hidden flex flex-col justify-end shadow-inner">
+              <div id="drumLiquid" class="w-full bg-sky-500/80 transition-all duration-500 flex flex-col items-center justify-center text-white font-mono text-xs font-bold" style="height: 50%;">
+                <span id="drumLabel">75 L Air (pH Cek)</span>
+              </div>
+            </div>
+            <div class="mt-3 flex items-center gap-2">
+              <button type="button" id="prevStepBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-earth-100 text-earth-700 hover:bg-earth-200 disabled:opacity-40" disabled>
+                ← Sebelumnya
+              </button>
+              <button type="button" id="nextStepBtn" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-botanical-800 text-white hover:bg-botanical-700">
+                Langkah Berikutnya →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="manajemen-lapangan" class="space-y-6 scroll-mt-20">
+      <div class="space-y-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-botanical-700">
+          Bagian 05 • Keamanan Pangan &amp; Tata Kelola Limbah
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-botanical-900">
+          Ketahanan Hujan (Rainfastness), Batas Panen (PHI) &amp; Penyimpanan Sisa
+        </h2>
+        <p class="text-sm sm:text-base text-earth-600 leading-relaxed max-w-4xl">
+          Efektivitas 150 liter larutan semprot pada budidaya kentang bergantung pada cuaca saat aplikasi, kepatuhan terhadap masa tunggu panen demi keamanan konsumen, serta perlindungan kemasan sisa (100 g Cabrio Top &amp; 200 g Manteb) agar tidak rusak menggumpal.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-surface rounded-2xl border border-earth-200 p-5 shadow-sm space-y-2.5">
+          <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center text-xl">
+            🌧️
+          </div>
+          <h3 class="text-base font-bold text-earth-800">Jendela Tahan Hujan (3–4 Jam)</h3>
+          <p class="text-xs text-earth-600 leading-relaxed">
+            Piraklostrobin meresap ke jaringan daun dalam beberapa jam, namun <strong>Mankozeb &amp; Metiram bersifat kontak di permukaan</strong>. Hujan lebat dalam 2–3 jam pasca semprot akan melunturkan lapisan pelindung. Pastikan cuaca cerah minimal 3–4 jam setelah semprot.
+          </p>
+        </div>
+
+        <div class="bg-surface rounded-2xl border border-earth-200 p-5 shadow-sm space-y-2.5">
+          <div class="w-10 h-10 rounded-xl bg-botanical-100 text-botanical-800 flex items-center justify-center text-xl">
+            ⏱️
+          </div>
+          <h3 class="text-base font-bold text-earth-800">Masa Pra-Panen (PHI: 14–21 Hari)</h3>
+          <p class="text-xs text-earth-600 leading-relaxed">
+            Hentikan penyemprotan minimal <strong>14 hingga 21 hari sebelum panen kentang</strong> untuk memberi waktu pelapukan alami residu ditiokarbamat dan metabolit ETU agar aman dikonsumsi.
+          </p>
+        </div>
+
+        <div class="bg-surface rounded-2xl border border-earth-200 p-5 shadow-sm space-y-2.5">
+          <div class="w-10 h-10 rounded-xl bg-amberwarn-100 text-amberwarn-800 flex items-center justify-center text-xl">
+            🔒
+          </div>
+          <h3 class="text-base font-bold text-earth-800">Penyimpanan Sisa 100g &amp; 200g</h3>
+          <p class="text-xs text-earth-600 leading-relaxed">
+            Formulasi WG dan WP bersifat <strong>higroskopis</strong> (menarik uap air). Gulung rapat mulut kemasan sisa, jepit dengan klip kedap udara, dan simpan di wadah tertutup rapat yang sejuk, gelap, kering, serta jauh dari jangkauan anak-anak.
+          </p>
+        </div>
+
+        <div class="bg-surface rounded-2xl border border-earth-200 p-5 shadow-sm space-y-2.5">
+          <div class="w-10 h-10 rounded-xl bg-earth-100 text-earth-800 flex items-center justify-center text-xl">
+            ♻️
+          </div>
+          <h3 class="text-base font-bold text-earth-800">Protokol Bilas 3x (Triple Rinse)</h3>
+          <p class="text-xs text-earth-600 leading-relaxed">
+            Larutan 150 L harus dihabiskan di hari yang sama (jangan diinapkan, karena pH larutan yang menginap dapat bergeser dan menurunkan efikasi). Bilas kemasan kosong 3x dengan air bersih sebelum dibuang sesuai prosedur limbah B3 pertanian.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-earth-200 bg-surface mt-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-earth-600">
+      <p class="font-medium">
+        Panduan Kalibrasi Dosis &amp; Standar pH Kentang • Cabrio Top 60 WG (BASF) &amp; Manteb 80 WP (Saprotan Utama)
+      </p>
+      <p class="font-mono text-[11px] text-earth-600">
+        Selalu gunakan Alat Pelindung Diri (APD) lengkap saat penimbangan dan penyemprotan.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function wrapLabel(text, maxLen = 16) {
+      if (text.length <= maxLen) return text;
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = '';
+      words.forEach((word) => {
+        if ((currentLine + ' ' + word).trim().length <= maxLen) {
+          currentLine = (currentLine + ' ' + word).trim();
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      });
+      if (currentLine) lines.push(currentLine);
+      return lines;
+    }
+
+    function calculateOptimalPack(neededGrams, availableSizes) {
+      const sorted = [...availableSizes].sort((a, b) => a - b);
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i] >= neededGrams) {
+          return {
+            totalBought: sorted[i],
+            label: `1 × ${sorted[i] >= 1000 ? (sorted[i] / 1000) + ' kg' : sorted[i] + ' gr'}`,
+            surplus: sorted[i] - neededGrams
+          };
+        }
+      }
+      const largest = sorted[sorted.length - 1];
+      const count = Math.ceil(neededGrams / largest);
+      const totalBought = count * largest;
+      return {
+        totalBought,
+        label: `${count} × ${largest >= 1000 ? (largest / 1000) + ' kg' : largest + ' gr'}`,
+        surplus: totalBought - neededGrams
+      };
+    }
+
+    const walesSteps = [
+      {
+        badge: 'Tahap 1 dari 4 • Persiapan & Kalibrasi pH Air',
+        title: 'Isi Drum dengan Separuh Air Bersih & Ukur pH (Standar 5,5 – 6,5)',
+        desc: 'Tempatkan drum kapasitas besar pada bidang datar. Isi dengan 50% dari total kebutuhan air (75 Liter untuk target 150 L), lalu ukur dengan pH meter atau kertas lakmus. Bila pH > 7,2, tambahkan pH adjuster agar masuk standar aman kentang (5,5–6,5). Siapkan juga 2 ember kecil masing-masing berisi 5 liter air bersih.',
+        tip: 'Koreksi pH air baku wajib dilakukan SEBELUM memasukkan bubuk Cabrio Top atau Manteb 80 WP.',
+        liquidHeight: '50%',
+        liquidColor: 'bg-sky-500/80',
+        liquidText: '50% Air (pH Cek)'
+      },
+      {
+        badge: 'Tahap 2 dari 4 • W1 (Water Dispersible Granules)',
+        title: 'Larutkan Cabrio Top 60 WG di Ember Pertama (Pre-Mix 1)',
+        desc: 'Taburkan butiran Cabrio Top 60 WG secara perlahan ke permukaan 5 liter air di ember pertama. Diamkan selama 30 detik agar air meresap ke pori-pori granul, lalu aduk merata hingga menjadi suspensi homogen bebas gumpalan.',
+        tip: 'Formulasi WG sangat mudah pecah dalam air dan tidak menghasilkan debu berlebih.',
+        liquidHeight: '62%',
+        liquidColor: 'bg-botanical-600/85',
+        liquidText: '+ Pre-Mix Cabrio WG'
+      },
+      {
+        badge: 'Tahap 3 dari 4 • W2 (Wettable Powder)',
+        title: 'Larutkan Manteb 80 WP di Ember Kedua (Pre-Mix 2)',
+        desc: 'Taburkan tepung Manteb 80 WP sedikit demi sedikit ke ember kedua (5 liter air) sambil diaduk terus-menerus. Tepung WP bersifat menolak air (hidrofobik) jika dituang sekaligus, sehingga pengadukan bertahap mencegah terbentuknya bola tepung kering.',
+        tip: 'Setelah menjadi pasta cair homogen, baru siap digabungkan ke drum utama.',
+        liquidHeight: '75%',
+        liquidColor: 'bg-amberwarn-600/85',
+        liquidText: '+ Pre-Mix Manteb WP'
+      },
+      {
+        badge: 'Tahap 4 dari 4 • A (Agitate) & S (Surfactant / Top-Up)',
+        title: 'Integrasikan ke Drum Utama & Penuhi Hingga Volume Target',
+        desc: 'Tuang larutan Pre-Mix Cabrio WG ke drum utama lalu aduk rata. Selanjutnya tuang larutan Pre-Mix Manteb WP sambil terus diaduk (agitasi). Terakhir, tambahkan sisa air hingga mencapai garis volume absolut (150 Liter), cek ulang pH akhir (5,5–6,5), dan masukkan perekat di urutan paling akhir.',
+        tip: 'Aduk larutan setiap kali mengambil cairan ke tangki punggung agar tepung WP tidak mengendap.',
+        liquidHeight: '95%',
+        liquidColor: 'bg-botanical-800/90',
+        liquidText: '100% Campuran Siap Pakai'
+      }
+    ];
+
+    let currentVolume = 150;
+    let currentStep = 1;
+    let packagingChartInstance = null;
+    let activeIngredientChartInstance = null;
+
+    function updatePhSimulator(phVal) {
+      const ph = Math.max(4.0, Math.min(9.0, Number(phVal) || 6.2));
+      document.getElementById('phValueDisplay').textContent = ph.toFixed(1);
+
+      const valDisplay = document.getElementById('phValueDisplay');
+      const box = document.getElementById('phStatusBox');
+      const badge = document.getElementById('phStatusBadge');
+      const actionTag = document.getElementById('phActionTag');
+      const title = document.getElementById('phStatusTitle');
+      const desc = document.getElementById('phStatusDesc');
+
+      if (ph < 5.0) {
+        valDisplay.className = 'font-mono text-2xl font-extrabold text-rose-700';
+        box.className = 'p-4 sm:p-5 rounded-xl bg-rose-50 border border-rose-500/40 space-y-2 transition-all';
+        badge.className = 'px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wider bg-rose-700 text-white';
+        badge.textContent = 'BAHAYA TERLALU ASAM (< pH 5,0) • RISIKO DAUN KENTANG GOSONG';
+        actionTag.className = 'text-xs font-mono font-bold text-rose-900';
+        actionTag.textContent = 'Tindakan: Naikkan pH ke 5,5–6,5 sebelum aplikasi';
+        title.className = 'text-base font-bold text-rose-900 pt-1';
+        title.textContent = 'Pelepasan Ion Logam Bebas (Mn²⁺ & Zn²⁺) dan Gas CS₂';
+        desc.textContent = 'Air terlalu asam memecah ikatan kimia mankozeb dan metiram secara cepat, melepaskan ion Mangan & Seng berlebih yang meracuni (membakar) jaringan daun kentang yang sensitif.';
+      } else if (ph >= 5.0 && ph < 5.5) {
+        valDisplay.className = 'font-mono text-2xl font-extrabold text-amberwarn-800';
+        box.className = 'p-4 sm:p-5 rounded-xl bg-amberwarn-50 border border-amberwarn-600/40 space-y-2 transition-all';
+        badge.className = 'px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wider bg-amberwarn-700 text-white';
+        badge.textContent = 'WASPADA AGAK ASAM (pH 5,0 – 5,4)';
+        actionTag.className = 'text-xs font-mono font-bold text-amberwarn-900';
+        actionTag.textContent = 'Tindakan: Segera semprotkan (jangan disimpan lama)';
+        title.className = 'text-base font-bold text-amberwarn-900 pt-1';
+        title.textContent = 'Masih Dapat Digunakan dengan Syarat Langsung Habis';
+        desc.textContent = 'Larutan sedikit di bawah rentang ideal kentang (5,5–6,5). Masih aman disemprotkan asalkan langsung dihabiskan saat itu juga dan cuaca tidak terik menyengat.';
+      } else if (ph >= 5.5 && ph <= 6.5) {
+        valDisplay.className = 'font-mono text-2xl font-extrabold text-botanical-800';
+        box.className = 'p-4 sm:p-5 rounded-xl bg-botanical-50 border border-botanical-600/40 space-y-2 transition-all';
+        badge.className = 'px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wider bg-botanical-800 text-white';
+        badge.textContent = 'ZONA AMAN & OPTIMAL UNTUK KENTANG (pH 5,5 – 6,5)';
+        actionTag.className = 'text-xs font-mono font-bold text-botanical-900';
+        actionTag.textContent = 'Tindakan: Langsung Gunakan Tanpa Penyangga pH';
+        title.className = 'text-base font-bold text-botanical-900 pt-1';
+        title.textContent = 'Stabilitas Molekul Maksimal & Aman Bagi Kutikula Daun Kentang';
+        desc.textContent = 'Pada rentang pH 5,5 hingga 6,5, piraklostrobin terserap optimal menembus kutikula daun kentang (Solanum tuberosum), sementara mankozeb dan metiram tetap stabil melapisi permukaan daun tanpa terurai menjadi senyawa beracun.';
+      } else if (ph > 6.5 && ph <= 7.2) {
+        valDisplay.className = 'font-mono text-2xl font-extrabold text-lime-800';
+        box.className = 'p-4 sm:p-5 rounded-xl bg-lime-50 border border-lime-600/40 space-y-2 transition-all';
+        badge.className = 'px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wider bg-lime-700 text-white';
+        badge.textContent = 'BATAS TOLERANSI ATAS (pH 6,6 – 7,2)';
+        actionTag.className = 'text-xs font-mono font-bold text-lime-900';
+        actionTag.textContent = 'Tindakan: Aman dipakai langsung; disarankan tambah pH adjuster ringan';
+        title.className = 'text-base font-bold text-lime-900 pt-1';
+        title.textContent = 'Masih Aman Bagi Daun Kentang Namun Penyerapan Mulai Melambat';
+        desc.textContent = 'Air netral masih aman bagi jaringan daun kentang, tetapi penyerapan piraklostrobin lebih cepat apabila pH diturunkan sedikit ke kisaran 6,0. Jangan biarkan larutan menginap di dalam tangki.';
+      } else {
+        valDisplay.className = 'font-mono text-2xl font-extrabold text-indigo-800';
+        box.className = 'p-4 sm:p-5 rounded-xl bg-indigo-50 border border-indigo-600/40 space-y-2 transition-all';
+        badge.className = 'px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wider bg-indigo-800 text-white';
+        badge.textContent = 'MELEBIHI STANDAR BASA (> pH 7,2) • HIDROLISIS & RISIKO FITOTOKSISITAS';
+        actionTag.className = 'text-xs font-mono font-bold text-indigo-900';
+        actionTag.textContent = 'Tindakan: Wajib turunkan pH air dengan pH Adjuster / Asam Sitrat';
+        title.className = 'text-base font-bold text-indigo-900 pt-1';
+        title.textContent = 'Bahan Aktif Terurai (Hidrolisis Basa) & Mengganggu Kutikula Kentang';
+        desc.textContent = 'Air baku yang terlalu basa (> pH 7,2–7,5) merusak stabilitas mankozeb, metiram, maupun piraklostrobin (efikasi turun drastis) dan berisiko mengiritasi lapisan lilin daun kentang. Tambahkan pH adjuster ke air baku hingga pH turun ke 5,5–6,5 sebelum obat dituang.';
+      }
+
+      document.querySelectorAll('.ph-preset').forEach((btn) => {
+        const presetVal = Number(btn.getAttribute('data-ph'));
+        if (Math.abs(presetVal - ph) < 0.05) {
+          btn.classList.add('ring-2', 'ring-offset-1', 'ring-botanical-800');
+        } else {
+          btn.classList.remove('ring-2', 'ring-offset-1', 'ring-botanical-800');
+        }
+      });
+    }
+
+    function initCharts() {
+      const ctxPack = document.getElementById('packagingChart').getContext('2d');
+      packagingChartInstance = new Chart(ctxPack, {
+        type: 'bar',
+        data: {
+          labels: [
+            wrapLabel('Cabrio Top 60 WG (Kemasan 250 gr)'),
+            wrapLabel('Manteb 80 WP (Kemasan 500 gr)')
+          ],
+          datasets: [
+            {
+              label: 'Takaran Terpakai (gram)',
+              data: [150, 300],
+              backgroundColor: '#1B4332',
+              borderRadius: 6
+            },
+            {
+              label: 'Sisa Stok Simpan (gram)',
+              data: [100, 200],
+              backgroundColor: '#D6D3D1',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false }
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Berat Bersih (Gram)'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  return `${ctx.dataset.label}: ${ctx.parsed.y} gram`;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const ctxActive = document.getElementById('activeIngredientChart').getContext('2d');
+      activeIngredientChartInstance = new Chart(ctxActive, {
+        type: 'bar',
+        data: {
+          labels: [
+            wrapLabel('Piraklostrobin 5% (FRAC 11 Sistemik)'),
+            wrapLabel('Metiram 55% (FRAC M03 Kontak)'),
+            wrapLabel('Mankozeb 80% (FRAC M03 Kontak)')
+          ],
+          datasets: [
+            {
+              label: 'Berat Bahan Aktif Murni dalam 150 L (gram)',
+              data: [7.5, 82.5, 240],
+              backgroundColor: ['#40916C', '#D97706', '#B45309'],
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Massa Bahan Aktif Murni (Gram)'
+              }
+            },
+            y: {
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  return `Bahan Aktif Murni: ${ctx.parsed.x} gram`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateCalculator(volume) {
+      const vol = Math.max(1, Math.min(2000, Number(volume) || 150));
+      currentVolume = vol;
+
+      const cabrioNeeded = Math.round(vol * 1 * 10) / 10;
+      const mantebNeeded = Math.round(vol * 2 * 10) / 10;
+      const totalSolids = Math.round((cabrioNeeded + mantebNeeded) * 10) / 10;
+
+      const cabrioPack = calculateOptimalPack(cabrioNeeded, [250, 500]);
+      const mantebPack = calculateOptimalPack(mantebNeeded, [250, 500, 800, 1000]);
+
+      document.getElementById('kpiCabrioPack').textContent = `Beli ${cabrioPack.label}`;
+      document.getElementById('kpiCabrioSub').textContent = `Total ${cabrioPack.totalBought} gr • Sisa simpan ${cabrioPack.surplus} gr`;
+      document.getElementById('kpiCabrioUse').textContent = `${cabrioNeeded} gram`;
+
+      document.getElementById('kpiMantebPack').textContent = `Beli ${mantebPack.label}`;
+      document.getElementById('kpiMantebSub').textContent = `Total ${mantebPack.totalBought} gr • Sisa simpan ${mantebPack.surplus} gr`;
+      document.getElementById('kpiMantebUse').textContent = `${mantebNeeded} gram`;
+
+      const tanksCount = (vol / 15).toFixed(1).replace('.0', '');
+      document.getElementById('kpiWaterTotal').textContent = `${vol} Liter`;
+      document.getElementById('kpiWaterTanks').textContent = `Setara ± ${tanksCount} tangki semprot (15 L)`;
+      document.getElementById('kpiTotalSolids').textContent = `${totalSolids} gram`;
+
+      document.getElementById('tblCabrioUse').textContent = `${cabrioNeeded} gram`;
+      document.getElementById('tblMantebUse').textContent = `${mantebNeeded} gram`;
+      document.getElementById('tblCabrioWater').textContent = `${vol} Liter`;
+      document.getElementById('tblMantebWater').textContent = `${vol} Liter`;
+
+      document.getElementById('tblCabrioBuy').innerHTML = `<span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-mono font-extrabold bg-botanical-800 text-white">Kemasan ${cabrioPack.label}</span>`;
+      document.getElementById('tblMantebBuy').innerHTML = `<span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-mono font-extrabold bg-amberwarn-700 text-white">Kemasan ${mantebPack.label}</span>`;
+
+      document.getElementById('tblCabrioRem').textContent = `${cabrioPack.surplus} gram`;
+      document.getElementById('tblMantebRem').textContent = `${mantebPack.surplus} gram`;
+
+      if (packagingChartInstance) {
+        packagingChartInstance.data.labels = [
+          wrapLabel(`Cabrio Top 60 WG (${cabrioPack.label})`),
+          wrapLabel(`Manteb 80 WP (${mantebPack.label})`)
+        ];
+        packagingChartInstance.data.datasets[0].data = [cabrioNeeded, mantebNeeded];
+        packagingChartInstance.data.datasets[1].data = [cabrioPack.surplus, mantebPack.surplus];
+        packagingChartInstance.update();
+      }
+
+      if (activeIngredientChartInstance) {
+        activeIngredientChartInstance.data.datasets[0].label = `Berat Bahan Aktif Murni dalam ${vol} L (gram)`;
+        activeIngredientChartInstance.data.datasets[0].data = [
+          Math.round(cabrioNeeded * 0.05 * 100) / 100,
+          Math.round(cabrioNeeded * 0.55 * 100) / 100,
+          Math.round(mantebNeeded * 0.80 * 100) / 100
+        ];
+        activeIngredientChartInstance.update();
+      }
+
+      document.querySelectorAll('.vol-preset').forEach((btn) => {
+        const btnVol = Number(btn.getAttribute('data-vol'));
+        if (btnVol === vol) {
+          btn.className = 'vol-preset px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-botanical-700 bg-botanical-800 text-white shadow-sm transition';
+        } else {
+          btn.className = 'vol-preset px-3 py-1.5 rounded-lg text-xs font-bold border border-earth-300 bg-canvas hover:bg-botanical-50 text-earth-800 transition';
+        }
+      });
+
+      updateWalesUI(currentStep);
+    }
+
+    function updateWalesUI(step) {
+      currentStep = step;
+      const data = walesSteps[step - 1];
+      const bufferVol = Math.round(currentVolume * 0.5 * 10) / 10;
+
+      document.getElementById('walesBadge').textContent = data.badge;
+      document.getElementById('walesTitle').textContent = data.title;
+      document.getElementById('walesDesc').textContent = data.desc;
+      document.getElementById('walesTip').textContent = data.tip;
+
+      const liquidEl = document.getElementById('drumLiquid');
+      liquidEl.style.height = data.liquidHeight;
+      liquidEl.className = `w-full ${data.liquidColor} transition-all duration-500 flex flex-col items-center justify-center text-white font-mono text-xs font-bold text-center px-1`;
+
+      if (step === 1) {
+        document.getElementById('drumLabel').textContent = `${bufferVol} L Air (pH Cek)`;
+      } else if (step === 4) {
+        document.getElementById('drumLabel').textContent = `${currentVolume} L Siap`;
+      } else {
+        document.getElementById('drumLabel').textContent = data.liquidText;
+      }
+
+      document.querySelectorAll('.wales-step-btn').forEach((btn) => {
+        const s = Number(btn.getAttribute('data-step'));
+        if (s === step) {
+          btn.className = 'wales-step-btn text-left p-3.5 rounded-xl border-2 border-botanical-700 bg-botanical-800 text-white transition';
+          btn.querySelector('div:first-child').className = 'text-[11px] font-mono uppercase opacity-80';
+        } else {
+          btn.className = 'wales-step-btn text-left p-3.5 rounded-xl border border-earth-200 bg-canvas hover:bg-botanical-50 text-earth-800 transition';
+          btn.querySelector('div:first-child').className = 'text-[11px] font-mono uppercase text-earth-600';
+        }
+      });
+
+      document.getElementById('prevStepBtn').disabled = step === 1;
+      document.getElementById('nextStepBtn').disabled = step === 4;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      updateCalculator(150);
+      updatePhSimulator(6.2);
+
+      const slider = document.getElementById('waterVolumeSlider');
+      const input = document.getElementById('waterVolumeInput');
+
+      slider.addEventListener('input', (e) => {
+        input.value = e.target.value;
+        updateCalculator(e.target.value);
+      });
+
+      input.addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        if (val >= 1 && val <= 2000) {
+          if (val <= 500) slider.value = val;
+          updateCalculator(val);
+        }
+      });
+
+      document.querySelectorAll('.vol-preset').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const val = Number(btn.getAttribute('data-vol'));
+          input.value = val;
+          if (val <= 500) slider.value = val;
+          updateCalculator(val);
+        });
+      });
+
+      const phSlider = document.getElementById('phSlider');
+      phSlider.addEventListener('input', (e) => {
+        updatePhSimulator(e.target.value);
+      });
+
+      document.querySelectorAll('.ph-preset').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const val = Number(btn.getAttribute('data-ph'));
+          phSlider.value = val;
+          updatePhSimulator(val);
+        });
+      });
+
+      document.querySelectorAll('.risk-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          document.querySelectorAll('.risk-tab').forEach((t) => {
+            t.className = 'risk-tab px-3.5 py-2 rounded-xl text-xs font-bold bg-earth-100 text-earth-800 hover:bg-earth-200 transition';
+          });
+          tab.className = 'risk-tab px-3.5 py-2 rounded-xl text-xs font-bold bg-amberwarn-700 text-white shadow-sm transition';
+
+          document.querySelectorAll('.risk-panel').forEach((panel) => {
+            panel.classList.add('hidden');
+          });
+          document.getElementById(`tab-${target}`).classList.remove('hidden');
+        });
+      });
+
+      document.querySelectorAll('.wales-step-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          updateWalesUI(Number(btn.getAttribute('data-step')));
+        });
+      });
+
+      document.getElementById('prevStepBtn').addEventListener('click', () => {
+        if (currentStep > 1) updateWalesUI(currentStep - 1);
+      });
+
+      document.getElementById('nextStepBtn').addEventListener('click', () => {
+        if (currentStep < 4) updateWalesUI(currentStep + 1);
+      });
+    });
+  </script>
+</body>
+</html>
